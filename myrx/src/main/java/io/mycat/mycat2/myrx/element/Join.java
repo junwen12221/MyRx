@@ -1,9 +1,9 @@
 package io.mycat.mycat2.myrx.element;
 
 public class Join extends Element {
-        Meng[] elements;
+       public Element[] elements;
 
-        public Join(Meng[] elements) {
+        public Join(Element[] elements){
             this.elements = elements;
         }
     }

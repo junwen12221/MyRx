@@ -1,7 +1,7 @@
 package io.mycat.mycat2.myrx.element;
 
-import javax.lang.model.element.ElementVisitor;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -10,13 +10,13 @@ import java.util.function.Consumer;
  */
 public interface Meng {
 
-    default Meng limit(long count) {
+    default Element limit(long count) {
         return null;
     }
-    default Meng limitOffset(long offset,long count) {
+    default Element limitOffset(long offset,long count) {
         return null;
     }
-    default Meng orderBy(BiFunction function) {
+    default Element orderBy(BiFunction function) {
         return null;
     }
 
@@ -24,10 +24,21 @@ public interface Meng {
         function.accept(this);
     }
 
-    default Meng where(Condition condition) {
-        return new Where(condition, this);
+    default Element where(Condition condition) {
+        return new Where(condition, (Element)this);
     }
-
+    default Element where(Object left, Op op, Object right) {
+        return new Where(new Condition(left, op, right), (Element)this);
+    }
+    default Out out(String... resultSetMeta) {
+        return new Out(resultSetMeta,(Element)this);
+    }
+    default Element join(Element...elements) {
+        Element[] newElement=new Element[elements.length+1];
+        newElement[0]=(Element) this;
+        System.arraycopy(elements,0,newElement,1,elements.length);
+        return new Join(newElement);
+    }
     static Method findMethod(Object visitor, Class<?> type) {
         if (type == Object.class) {
             return null;
@@ -40,26 +51,16 @@ public interface Meng {
         }
     }
 
-    default void accept(Object visitor) throws Exception {
+    default<T> T accept(Object visitor) {
         Method method = findMethod(visitor, getClass());
         if (method != null) {
-            method.invoke(visitor, this);
+            try {
+                return(T) method.invoke(visitor, this);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+        return null;
     }
 
-    default void visit() {
-        if (this instanceof Condition) {
-            new ConditionVisitor().visit((Condition) this);
-        } else if (this instanceof INQuery) {
-            new INQueryVisitor().visit((INQuery) this);
-        } else if (this instanceof Join) {
-            new JoinVisitor().visit((Join) this);
-        } else if (this instanceof Where) {
-            new WhereVisitor().visit((Where) this);
-        } else if (this instanceof Which) {
-            new WhichVisitor().visit((Which) this);
-        } else {
-            System.out.println("异常");
-        }
-    }
 }
