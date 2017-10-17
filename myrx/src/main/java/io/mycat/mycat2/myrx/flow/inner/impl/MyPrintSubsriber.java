@@ -8,7 +8,7 @@ import io.mycat.mycat2.myrx.flow.inner.MySubsriberInterface;
 public class MyPrintSubsriber implements MySubsriberInterface<Object> {
     @Override
     public void onNext(Object item) {
-        System.out.println(item);
+        System.out.println("MyPrintSubsriber=>" + item);
     }
 
     @Override

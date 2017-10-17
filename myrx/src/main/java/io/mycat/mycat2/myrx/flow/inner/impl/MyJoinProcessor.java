@@ -3,7 +3,7 @@ package io.mycat.mycat2.myrx.flow.inner.impl;
 import io.mycat.mycat2.myrx.flow.inner.MyProcessorInterface;
 import io.mycat.mycat2.myrx.flow.inner.MyPublisherInterface;
 import io.mycat.mycat2.myrx.flow.inner.MySubsriberInterface;
-import io.mycat.mycat2.myrx.flow.inner.TriConsumer;
+import io.mycat.mycat2.myrx.flow.inner.TriFunction;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +31,7 @@ public class MyJoinProcessor<T> implements MyPublisherInterface<T>, AutoCloseabl
         }).collect(Collectors.toList());
         out = new MyJoinProcessorOut(ins, () -> new HashMap<String, String>(), (item, collect, collectList) -> {
             System.out.println(item + "   " + collect + "   " + collectList);
+            return item;
         });
     }
 
@@ -44,10 +45,10 @@ public class MyJoinProcessor<T> implements MyPublisherInterface<T>, AutoCloseabl
         out.close();
     }
 
-    static class MyJoinProcessorIn<T, COLLECT> implements MySubsriberInterface<T> {
+    static class MyJoinProcessorIn<T, COLLECT, RESULT> implements MySubsriberInterface<T> {
         //MyJoinProcessorIn只负责缓冲,不进行处理条件的判断
         String name;
-        MyJoinProcessorOut<T, COLLECT> out;
+        MyJoinProcessorOut<T, COLLECT, RESULT> out;
         COLLECT collect;
         boolean isComplete = false;
 
@@ -80,11 +81,11 @@ public class MyJoinProcessor<T> implements MyPublisherInterface<T>, AutoCloseabl
             isComplete = complete;
         }
 
-        public MyJoinProcessorOut<T, COLLECT> getOut() {
+        public MyJoinProcessorOut<T, COLLECT, RESULT> getOut() {
             return out;
         }
 
-        public void setOut(MyJoinProcessorOut<T, COLLECT> out) {
+        public void setOut(MyJoinProcessorOut<T, COLLECT, RESULT> out) {
             this.out = out;
         }
 
@@ -97,14 +98,14 @@ public class MyJoinProcessor<T> implements MyPublisherInterface<T>, AutoCloseabl
         }
     }
 
-    static class MyJoinProcessorOut<T, COLLECT> extends MyPublisher<COLLECT> {
-        MyJoinProcessorIn<T, COLLECT>[] joinProcessorIn;
+    static class MyJoinProcessorOut<T, COLLECT, RESULT> extends MyPublisher<RESULT> {
+        MyJoinProcessorIn<T, COLLECT, RESULT>[] joinProcessorIn;
         COLLECT[] collects;
-        TriConsumer<T, MyJoinProcessorIn<T, COLLECT>, MyJoinProcessorIn<T, COLLECT>[]> consumer;
+        TriFunction<T, MyJoinProcessorIn<T, COLLECT, RESULT>, MyJoinProcessorIn<T, COLLECT, RESULT>[], RESULT> triFunction;
 
-        public MyJoinProcessorOut(List<MyJoinProcessorIn<T, COLLECT>> joinProcessorIn,
+        public MyJoinProcessorOut(List<MyJoinProcessorIn<T, COLLECT, RESULT>> joinProcessorIn,
                                   Supplier<COLLECT> supplier,
-                                  TriConsumer<T, MyJoinProcessorIn<T, COLLECT>, MyJoinProcessorIn<T, COLLECT>[]> consumer) {
+                                  TriFunction<T, MyJoinProcessorIn<T, COLLECT, RESULT>, MyJoinProcessorIn<T, COLLECT, RESULT>[], RESULT> triFunction) {
             this.joinProcessorIn = joinProcessorIn.toArray(new MyJoinProcessorIn[joinProcessorIn.size()]);
             this.collects = (COLLECT[]) new Object[joinProcessorIn.size()];
             for (int i = 0; i < joinProcessorIn.size(); i++) {
@@ -112,11 +113,11 @@ public class MyJoinProcessor<T> implements MyPublisherInterface<T>, AutoCloseabl
                 in.collect = collects[i] = supplier.get();
                 in.setOut(this);
             }
-            this.consumer = consumer;
+            this.triFunction = triFunction;
         }
 
-        public void onNext(T item, MyJoinProcessorIn<T, COLLECT> collect) {
-            consumer.accept(item, collect, joinProcessorIn);
+        public void onNext(T item, MyJoinProcessorIn<T, COLLECT, RESULT> collect) {
+            super.submit(triFunction.accept(item, collect, joinProcessorIn));
         }
 
         public void onError(Throwable throwable) {
