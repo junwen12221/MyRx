@@ -1,27 +1,23 @@
 package io.mycat.mycat2.myrx.visitor;
 
 import io.mycat.mycat2.myrx.element.*;
+import io.mycat.mycat2.myrx.flow.inner.MyPublisherInterface;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.SubmissionPublisher;
 import java.util.function.Consumer;
 
 /**
  * Created by jamie on 2017/10/14.
  */
 public class FromDown2UpVisitor {
-    List<SubmissionPublisher> publisherList = new ArrayList<>();
+    public GeneratorVisitor generatorVisitor = new GeneratorVisitor();
+    List<MyPublisherInterface> publisherList = new ArrayList<>();
     List<INQuery> inQueryList = new ArrayList<>();
     List<Runnable> actions = new ArrayList<>();
     Map<INQuery, Map<String, String>> asMap = new HashMap<>();
-  public   GeneratorVisitor generatorVisitor=new GeneratorVisitor();
-    public void visit(Condition condition) {
-        visitConditionHelper(condition.left, this);
-        visitConditionHelper(condition.right, this);
-    }
 
     private static void visitConditionHelper(Object th, FromDown2UpVisitor visitor) {
         if (th instanceof String) {
@@ -30,6 +26,22 @@ public class FromDown2UpVisitor {
             Condition condition1 = (Condition) th;
             condition1.accept(visitor);
         }
+    }
+
+    static void formDown2Join(Element down, Consumer<Element> consumer) {
+        do {
+            System.out.println("up=>" + down.toString());
+            consumer.accept(down);
+            if (down instanceof Join) {
+                break;
+            }
+            down = down.getUpNode();
+        } while (down != null);
+    }
+
+    public void visit(Condition condition) {
+        visitConditionHelper(condition.left, this);
+        visitConditionHelper(condition.right, this);
     }
 
     public void visit(Element element) {
@@ -48,16 +60,6 @@ public class FromDown2UpVisitor {
 
 
         ////////////////////////////
-    }
-    static void formDown2Join(Element down,Consumer<Element> consumer){
-        do {
-            System.out.println("up=>"+down.toString());
-            consumer.accept(down);
-            if (down instanceof Join){
-                break;
-            }
-            down = down.getUpNode();
-        } while (down != null);
     }
 
     public void visit(Join join) {
@@ -80,7 +82,7 @@ public class FromDown2UpVisitor {
         which.in.accept(this);
     }
 
-    public List<SubmissionPublisher> getPublisherList() {
+    public List<MyPublisherInterface> getPublisherList() {
         return publisherList;
     }
 

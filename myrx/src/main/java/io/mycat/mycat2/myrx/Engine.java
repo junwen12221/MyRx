@@ -1,8 +1,16 @@
 package io.mycat.mycat2.myrx;
 
 import io.mycat.mycat2.myrx.element.*;
+import io.mycat.mycat2.myrx.flow.inner.Node;
+import io.mycat.mycat2.myrx.flow.inner.PrintNode;
+import io.mycat.mycat2.myrx.visitor.CompileVisitor;
 import io.mycat.mycat2.myrx.visitor.FromDown2UpVisitor;
+import io.mycat.mycat2.myrx.visitor.GeneratorVisitor;
 import io.mycat.mycat2.myrx.visitor.SetUpNodeVisitor;
+
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
 import static io.mycat.mycat2.myrx.element.Op.AND;
 import static io.mycat.mycat2.myrx.element.Op.IN;
@@ -53,9 +61,52 @@ public class Engine {
         FromDown2UpVisitor visitor = new FromDown2UpVisitor();
         sql3.accept(visitor);
         System.out.println("=>>>>>>>>>>>>>>>>>> join <<<<<<<<<<<<<<<<<<<<<<<=");
-        System.out.println(visitor.generatorVisitor.getJoinMap());
-        System.out.println(visitor.generatorVisitor.getOutJoin());
+        GeneratorVisitor generatorVisitor = visitor.generatorVisitor;
+//        Map<Join,List<MyProcessorInterface>> joinMap= generatorVisitor.getJoinMap();
+//      for (Map.Entry<Join,List<MyProcessorInterface>> entry: joinMap.entrySet()){
+//       MyJoinProcessor joinProcessor=   new MyJoinProcessor();
+//         List<MyProcessorInterface> list= entry.getValue();
+//          for (int i = 0; i <list.size() ; i++) {
+//              joinProcessor.put(String.valueOf(i),list.get(i));
+//          }
+//          joinProcessor.init();
+//
+        visitor.generatorVisitor.getJoin2JoinProcessorMap().entrySet().forEach((i) -> System.out.println(i));
+        System.out.println("-----------------------------------------------");
+        visitor.generatorVisitor.getJoin2ProcessorListMap().entrySet().forEach((i) -> System.out.println(i));
+        System.out.println("-----------------------------------------------");
+        visitor.generatorVisitor.getJoin2PublisherListMap().entrySet().forEach((i) -> System.out.println(i));
+        System.out.println("-----------------------------------------------");
+        visitor.generatorVisitor.getJoin2SubsriberListMap().entrySet().forEach((i) -> System.out.println(i));
+        System.out.println("-----------------------------------------------");
         System.out.println(visitor.generatorVisitor.getOut());
+
+        CompileVisitor compileVisitor = new CompileVisitor();
+        Node node = sql3.accept(compileVisitor);
+        PrintNode printNode = new PrintNode();
+        node.setTopNode(printNode);
+        System.out.println("=======!===============!=========");
+        List<Node> nodes = compileVisitor.getSource();
+        for (int i = 0; i < nodes.size(); i++) {
+            Node publish = nodes.get(i);
+            asynTest(IntStream.range(1, i * 10), (c) -> publish.onNext(c), 30 + i);
+        }
+        Thread.sleep(2000);
+    }
+
+    private static void asynTest(IntStream stream, Consumer<String> consumer, long waittime) {
+        new Thread(() -> {
+            stream.boxed()
+                    .map((i) -> Integer.valueOf(i).toString()).map((i) -> {
+                try {
+                    Thread.sleep(waittime);
+                    System.out.println("waiting......");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return i;
+            }).forEach(consumer::accept);
+        }).start();
     }
 
 }
