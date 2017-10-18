@@ -12,7 +12,7 @@ public class ChainNode<T, R> extends Node<T> {
 
     public ChainNode() {
         function = (i) -> {
-            System.out.println("数据流转:" + i);
+            // System.out.println("数据流转:" + i);
             return (R) i;
         };
     }

@@ -6,11 +6,6 @@ import io.mycat.mycat2.myrx.element.*;
  * Created by jamie on 2017/10/14.
  */
 public class SetUpNodeVisitor {
-    public void visit(Condition condition) {
-        setConditionHelper(condition.left,this,condition);
-        setConditionHelper(condition.right,this,condition);
-
-    }
     private static void setConditionHelper(Object th,SetUpNodeVisitor visitor,Condition up){
         if (th instanceof String) {
 
@@ -19,6 +14,12 @@ public class SetUpNodeVisitor {
             condition1.setUpNode(up);
             condition1.accept(visitor);
         }
+    }
+
+    public void visit(Condition condition) {
+        setConditionHelper(condition.left, this, condition);
+        setConditionHelper(condition.right, this, condition);
+
     }
 
     public void visit(Element element) {
@@ -39,8 +40,10 @@ public class SetUpNodeVisitor {
     }
 
     public void visit(Where where) {
-        where.condition.setUpNode(where);
-        where.condition.accept(this);
+        if (where.condition != null) {
+            where.condition.setUpNode(where);
+            where.condition.accept(this);
+        }
         where.select.setUpNode(where);
         where.select.accept(this);
     }

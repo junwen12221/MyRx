@@ -1,10 +1,7 @@
 package io.mycat.mycat2.myrx.visitor;
 
 import io.mycat.mycat2.myrx.element.*;
-import io.mycat.mycat2.myrx.flow.inner.ChainNode;
-import io.mycat.mycat2.myrx.flow.inner.LeafNode;
-import io.mycat.mycat2.myrx.flow.inner.MutilNode;
-import io.mycat.mycat2.myrx.flow.inner.Node;
+import io.mycat.mycat2.myrx.flow.inner.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +53,7 @@ public class CompileVisitor {
     }
 
     public Node visit(Where where) {
-        ChainNode chainNode = new ChainNode();
+        FilterChainNode chainNode = new FilterChainNode(where.predicate);
         Node node = where.select.accept(this);
         node.setTopNode(chainNode);
         chainNode.setNextNode(node);

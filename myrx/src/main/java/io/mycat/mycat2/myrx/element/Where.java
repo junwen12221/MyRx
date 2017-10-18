@@ -12,7 +12,7 @@ public class Where extends Element {
         }
 
     public Where(Predicate predicate, Element select) {
-        this.condition = condition;
+        this.predicate = predicate;
         this.select = select;
     }
 

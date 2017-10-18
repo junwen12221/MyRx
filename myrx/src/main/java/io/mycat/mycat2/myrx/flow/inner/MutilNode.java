@@ -19,7 +19,7 @@ public class MutilNode<T> extends Node<T> {
 
     @Override
     public void onNext(T item) {
-        System.out.println("数据聚合:" + item);
+        // System.out.println("数据聚合:" + item);
         topNode.onNext(item);
     }
 

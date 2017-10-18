@@ -94,7 +94,23 @@ public class Engine {
         Thread.sleep(2000);
     }
 
-    private static void asynTest(IntStream stream, Consumer<String> consumer, long waittime) {
+    public static void asynTest(IntStream stream, Consumer<String> consumer, long waittime, Runnable runnable) {
+        new Thread(() -> {
+            stream.boxed()
+                    .map((i) -> Integer.valueOf(i).toString()).map((i) -> {
+                try {
+                    Thread.sleep(waittime);
+                    //  System.out.println("waiting......");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return i;
+            }).forEach(consumer::accept);
+            runnable.run();
+        }).start();
+    }
+
+    public static void asynTest(IntStream stream, Consumer<String> consumer, long waittime) {
         new Thread(() -> {
             stream.boxed()
                     .map((i) -> Integer.valueOf(i).toString()).map((i) -> {
@@ -108,5 +124,4 @@ public class Engine {
             }).forEach(consumer::accept);
         }).start();
     }
-
 }

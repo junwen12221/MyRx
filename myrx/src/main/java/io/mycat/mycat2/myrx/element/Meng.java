@@ -42,7 +42,7 @@ public interface Meng {
         return new Where(condition, (Element)this);
     }
 
-    default Element where(Predicate predicate) {
+    default <T> Element where(Predicate<T> predicate) {
         return new Where(predicate, (Element) this);
     }
 

@@ -5,16 +5,16 @@ public class PrintNode extends Node {
 
     @Override
     public void onNext(Object item) {
-        System.out.println(item);
+        System.out.println("print=>" + item);
     }
 
     @Override
     public void onError(Throwable throwable) {
-        nextNode.onError(throwable);
+
     }
 
     @Override
     public void onComplete() {
-        nextNode.onComplete();
+        System.out.println("print=>Complete!");
     }
 }
