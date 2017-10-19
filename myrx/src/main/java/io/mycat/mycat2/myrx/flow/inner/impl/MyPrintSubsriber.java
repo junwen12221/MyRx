@@ -1,11 +1,11 @@
 package io.mycat.mycat2.myrx.flow.inner.impl;
 
-import io.mycat.mycat2.myrx.flow.inner.MySubsriberInterface;
+import io.mycat.mycat2.myrx.flow.inner.Node;
 
 /**
  * Created by jamie on 2017/10/16.
  */
-public class MyPrintSubsriber implements MySubsriberInterface<Object> {
+public class MyPrintSubsriber implements Node<Object> {
     @Override
     public void onNext(Object item) {
         System.out.println("MyPrintSubsriber=>" + item);

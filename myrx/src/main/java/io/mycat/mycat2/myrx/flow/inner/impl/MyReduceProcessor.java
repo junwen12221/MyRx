@@ -1,7 +1,7 @@
 package io.mycat.mycat2.myrx.flow.inner.impl;
 
 import io.mycat.mycat2.myrx.flow.inner.MyProcessorInterface;
-import io.mycat.mycat2.myrx.flow.inner.MySubsriberInterface;
+import io.mycat.mycat2.myrx.flow.inner.Node;
 
 import java.util.function.BinaryOperator;
 
@@ -10,7 +10,7 @@ import java.util.function.BinaryOperator;
  */
 public class MyReduceProcessor<T> implements MyProcessorInterface<T, T> {
     BinaryOperator<T> accumulator;
-    MySubsriberInterface<? super T> subscriber;
+    Node<? super T> subscriber;
     T identity;
 
     public MyReduceProcessor(T identity, BinaryOperator<T> accumulator) {
@@ -19,7 +19,7 @@ public class MyReduceProcessor<T> implements MyProcessorInterface<T, T> {
     }
 
     @Override
-    public void subscribe(MySubsriberInterface<? super T> subscriber) {
+    public void subscribe(Node<? super T> subscriber) {
         this.subscriber = subscriber;
     }
 

@@ -1,9 +1,9 @@
 package io.mycat.mycat2.myrx.node;
 
-public class LeafNode<T> extends Node<T> {
+public class LeafNode<T> extends MyNode<T> {
     @Override
     public void onNext(T item) {
-        //  System.out.println("数据产生:" + item);
+        //  System.nextNode.println("数据产生:" + item);
         topNode.onNext(item);
     }
 

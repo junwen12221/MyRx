@@ -1,6 +1,6 @@
 package io.mycat.mycat2.myrx.node;
 
-public class PrintNode extends Node {
+public class PrintNode extends MyNode {
 
 
     @Override

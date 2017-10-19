@@ -1,7 +1,7 @@
 package io.mycat.mycat2.myrx.flow.inner.impl;
 
 import io.mycat.mycat2.myrx.flow.inner.MyProcessorInterface;
-import io.mycat.mycat2.myrx.flow.inner.MySubsriberInterface;
+import io.mycat.mycat2.myrx.flow.inner.Node;
 
 import java.util.function.Function;
 
@@ -10,7 +10,7 @@ import java.util.function.Function;
  */
 public class MyProcessor<T, R> implements MyProcessorInterface<T, R> {
     Function<T, R> function;
-    MySubsriberInterface<? super R> subscriber;
+    Node<? super R> subscriber;
 
     public MyProcessor(Function<T, R> function) {
         this.function = function;
@@ -22,7 +22,7 @@ public class MyProcessor<T, R> implements MyProcessorInterface<T, R> {
     }
 
     @Override
-    public void subscribe(MySubsriberInterface<? super R> subscriber) {
+    public void subscribe(Node<? super R> subscriber) {
         this.subscriber = subscriber;
     }
 

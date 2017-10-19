@@ -2,7 +2,7 @@ package io.mycat.mycat2.myrx.node;
 
 import java.util.function.Function;
 
-public class ChainNode<T, R> extends Node<T> {
+public class ChainNode<T, R> extends MyNode<T> {
 
     Function<T, R> function;
 
@@ -12,7 +12,7 @@ public class ChainNode<T, R> extends Node<T> {
 
     public ChainNode() {
         function = (i) -> {
-            // System.out.println("数据流转:" + i);
+            // System.nextNode.println("数据流转:" + i);
             return (R) i;
         };
     }

@@ -2,7 +2,7 @@ package io.mycat.mycat2.myrx.node;
 
 import java.util.function.Predicate;
 
-public class FilterChainNode<T> extends Node<T> {
+public class FilterChainNode<T> extends MyNode<T> {
 
     Predicate<T> predicate;
 

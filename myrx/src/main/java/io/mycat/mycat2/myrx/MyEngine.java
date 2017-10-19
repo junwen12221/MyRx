@@ -1,7 +1,7 @@
 package io.mycat.mycat2.myrx;
 
 import io.mycat.mycat2.myrx.element.Out;
-import io.mycat.mycat2.myrx.node.Node;
+import io.mycat.mycat2.myrx.node.MyNode;
 import io.mycat.mycat2.myrx.node.PrintNode;
 import io.mycat.mycat2.myrx.visitor.CompileVisitor;
 import io.mycat.mycat2.myrx.visitor.SetUpNodeVisitor;
@@ -27,9 +27,9 @@ public class MyEngine {
                 .join(fromSQL("select a.id,a.price", "a"))
                 .where((s) -> Integer.valueOf(s.toString()) % 2 == 0)
                 .out("tableA.id", "tableA.price", "tableB.username");
-        List<Node> nodes = compile(sql);
+        List<MyNode> nodes = compile(sql);
         for (int i = 0; i < nodes.size(); i++) {
-            Node publish = nodes.get(i);
+            MyNode publish = nodes.get(i);
             asynTest(IntStream.range(i * 10, (i + 1) * 10), (c) -> {
                 publish.onNext(c);
             }, 30 + i * 30, () -> publish.onComplete());
@@ -37,10 +37,10 @@ public class MyEngine {
         Thread.sleep(2000);
     }
 
-    static List<Node> compile(Out out) {
+    static List<MyNode> compile(Out out) {
         out.accept(new SetUpNodeVisitor());
         CompileVisitor compileVisitor = new CompileVisitor();
-        Node node = out.accept(compileVisitor);
+        MyNode node = out.accept(compileVisitor);
         PrintNode printNode = new PrintNode();
         node.setTopNode(printNode);
         System.out.println("=======!===============!=========");

@@ -1,7 +1,7 @@
 package io.mycat.mycat2.myrx.flow.inner.impl;
 
 import io.mycat.mycat2.myrx.flow.inner.MyProcessorInterface;
-import io.mycat.mycat2.myrx.flow.inner.MySubsriberInterface;
+import io.mycat.mycat2.myrx.flow.inner.Node;
 
 import java.util.function.Predicate;
 
@@ -10,14 +10,14 @@ import java.util.function.Predicate;
  */
 public class MyFilterProcessor<T> implements MyProcessorInterface<T, T> {
     Predicate<T> predicate;
-    MySubsriberInterface<? super T> subscriber;
+    Node<? super T> subscriber;
 
     public MyFilterProcessor(Predicate<T> predicate) {
         this.predicate = predicate;
     }
 
     @Override
-    public void subscribe(MySubsriberInterface<? super T> subscriber) {
+    public void subscribe(Node<? super T> subscriber) {
         this.subscriber = subscriber;
     }
 
