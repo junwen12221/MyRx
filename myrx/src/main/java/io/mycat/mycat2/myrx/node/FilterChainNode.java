@@ -1,4 +1,4 @@
-package io.mycat.mycat2.myrx.flow.inner;
+package io.mycat.mycat2.myrx.node;
 
 import java.util.function.Predicate;
 

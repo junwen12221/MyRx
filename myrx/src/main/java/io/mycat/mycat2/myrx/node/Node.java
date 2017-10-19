@@ -1,4 +1,6 @@
-package io.mycat.mycat2.myrx.flow.inner;
+package io.mycat.mycat2.myrx.node;
+
+import io.mycat.mycat2.myrx.flow.inner.MySubsriberInterface;
 
 import java.lang.reflect.Method;
 

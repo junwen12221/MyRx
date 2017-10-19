@@ -1,7 +1,7 @@
 package io.mycat.mycat2.myrx.visitor;
 
 import io.mycat.mycat2.myrx.element.*;
-import io.mycat.mycat2.myrx.flow.inner.*;
+import io.mycat.mycat2.myrx.node.*;
 
 import java.util.ArrayList;
 import java.util.List;

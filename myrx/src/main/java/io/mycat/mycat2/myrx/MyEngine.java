@@ -1,8 +1,8 @@
 package io.mycat.mycat2.myrx;
 
 import io.mycat.mycat2.myrx.element.Out;
-import io.mycat.mycat2.myrx.flow.inner.Node;
-import io.mycat.mycat2.myrx.flow.inner.PrintNode;
+import io.mycat.mycat2.myrx.node.Node;
+import io.mycat.mycat2.myrx.node.PrintNode;
 import io.mycat.mycat2.myrx.visitor.CompileVisitor;
 import io.mycat.mycat2.myrx.visitor.SetUpNodeVisitor;
 

@@ -1,4 +1,4 @@
-package io.mycat.mycat2.myrx.flow.inner;
+package io.mycat.mycat2.myrx.node;
 
 public class LeafNode<T> extends Node<T> {
     @Override
